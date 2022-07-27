@@ -73,6 +73,54 @@ var (
 			},
 		},
 	}
+	// PortalLegalsColumns holds the columns for the "portal_legals" table.
+	PortalLegalsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "privacy_policy", Type: field.TypeString},
+		{Name: "term_of_service", Type: field.TypeString},
+		{Name: "copyright", Type: field.TypeString},
+		{Name: "online_training_agreement", Type: field.TypeString},
+		{Name: "portal_legal", Type: field.TypeUint32},
+	}
+	// PortalLegalsTable holds the schema information for the "portal_legals" table.
+	PortalLegalsTable = &schema.Table{
+		Name:       "portal_legals",
+		Columns:    PortalLegalsColumns,
+		PrimaryKey: []*schema.Column{PortalLegalsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "portal_legals_portals_legal",
+				Columns:    []*schema.Column{PortalLegalsColumns[7]},
+				RefColumns: []*schema.Column{PortalsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// PortalMetadataColumns holds the columns for the "portal_metadata" table.
+	PortalMetadataColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"KIND_DEVELOPMENT", "KIND_INTERNAL", "KIND_CONTENT_PARTNER", "KIND_DISTRIBUTION_PARTNER", "KIND_CUSTOMER", "KIND_COMPLISPACE", "KIND_TEAM"}, Default: "KIND_DEVELOPMENT"},
+		{Name: "lifecycle", Type: field.TypeEnum, Enums: []string{"LIFECYCLE_TRIAL", "LIFECYCLE_ONBOARD", "LIFECYCLE_LIVE", "LIFECYCLE_EXPIRED_TRIAL", "LIFECYCLE_SUSPENDED", "LIFECYCLE_CANCELLED", "LIFECYCLE_TEST", "LIFECYCLE_SAMPLE", "LIFECYCLE_TEMPLATE"}},
+		{Name: "portal_metadata", Type: field.TypeUint32},
+	}
+	// PortalMetadataTable holds the schema information for the "portal_metadata" table.
+	PortalMetadataTable = &schema.Table{
+		Name:       "portal_metadata",
+		Columns:    PortalMetadataColumns,
+		PrimaryKey: []*schema.Column{PortalMetadataColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "portal_metadata_portals_metadata",
+				Columns:    []*schema.Column{PortalMetadataColumns[5]},
+				RefColumns: []*schema.Column{PortalsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true},
@@ -161,6 +209,8 @@ var (
 		AccountsTable,
 		AccountFieldsTable,
 		PortalsTable,
+		PortalLegalsTable,
+		PortalMetadataTable,
 		UsersTable,
 		UserEmailsTable,
 		UserPasswordsTable,
@@ -171,6 +221,8 @@ var (
 func init() {
 	AccountsTable.ForeignKeys[0].RefTable = UsersTable
 	AccountFieldsTable.ForeignKeys[0].RefTable = AccountsTable
+	PortalLegalsTable.ForeignKeys[0].RefTable = PortalsTable
+	PortalMetadataTable.ForeignKeys[0].RefTable = PortalsTable
 	UserEmailsTable.ForeignKeys[0].RefTable = UsersTable
 	UserPasswordsTable.ForeignKeys[0].RefTable = UsersTable
 	PortalMembersTable.ForeignKeys[0].RefTable = PortalsTable

@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"tammy/pkg/store/account"
 	"tammy/pkg/store/portal"
+	"tammy/pkg/store/portallegal"
+	"tammy/pkg/store/portalmetadata"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -21,13 +23,13 @@ type PortalCreate struct {
 	hooks    []Hook
 }
 
-// SetCreatedAt sets the "created_at" field.
+// SetCreatedAt sets the "createdAt" field.
 func (pc *PortalCreate) SetCreatedAt(t time.Time) *PortalCreate {
 	pc.mutation.SetCreatedAt(t)
 	return pc
 }
 
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+// SetNillableCreatedAt sets the "createdAt" field if the given value is not nil.
 func (pc *PortalCreate) SetNillableCreatedAt(t *time.Time) *PortalCreate {
 	if t != nil {
 		pc.SetCreatedAt(*t)
@@ -35,13 +37,13 @@ func (pc *PortalCreate) SetNillableCreatedAt(t *time.Time) *PortalCreate {
 	return pc
 }
 
-// SetUpdatedAt sets the "updated_at" field.
+// SetUpdatedAt sets the "updatedAt" field.
 func (pc *PortalCreate) SetUpdatedAt(t time.Time) *PortalCreate {
 	pc.mutation.SetUpdatedAt(t)
 	return pc
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+// SetNillableUpdatedAt sets the "updatedAt" field if the given value is not nil.
 func (pc *PortalCreate) SetNillableUpdatedAt(t *time.Time) *PortalCreate {
 	if t != nil {
 		pc.SetUpdatedAt(*t)
@@ -88,6 +90,36 @@ func (pc *PortalCreate) AddMembers(a ...*Account) *PortalCreate {
 		ids[i] = a[i].ID
 	}
 	return pc.AddMemberIDs(ids...)
+}
+
+// AddMetadatumIDs adds the "metadata" edge to the PortalMetadata entity by IDs.
+func (pc *PortalCreate) AddMetadatumIDs(ids ...uint32) *PortalCreate {
+	pc.mutation.AddMetadatumIDs(ids...)
+	return pc
+}
+
+// AddMetadata adds the "metadata" edges to the PortalMetadata entity.
+func (pc *PortalCreate) AddMetadata(p ...*PortalMetadata) *PortalCreate {
+	ids := make([]uint32, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pc.AddMetadatumIDs(ids...)
+}
+
+// AddLegalIDs adds the "legal" edge to the PortalLegal entity by IDs.
+func (pc *PortalCreate) AddLegalIDs(ids ...uint32) *PortalCreate {
+	pc.mutation.AddLegalIDs(ids...)
+	return pc
+}
+
+// AddLegal adds the "legal" edges to the PortalLegal entity.
+func (pc *PortalCreate) AddLegal(p ...*PortalLegal) *PortalCreate {
+	ids := make([]uint32, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pc.AddLegalIDs(ids...)
 }
 
 // Mutation returns the PortalMutation object of the builder.
@@ -184,10 +216,10 @@ func (pc *PortalCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (pc *PortalCreate) check() error {
 	if _, ok := pc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`store: missing required field "Portal.created_at"`)}
+		return &ValidationError{Name: "createdAt", err: errors.New(`store: missing required field "Portal.createdAt"`)}
 	}
 	if _, ok := pc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`store: missing required field "Portal.updated_at"`)}
+		return &ValidationError{Name: "updatedAt", err: errors.New(`store: missing required field "Portal.updatedAt"`)}
 	}
 	if _, ok := pc.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "isActive", err: errors.New(`store: missing required field "Portal.isActive"`)}
@@ -271,6 +303,44 @@ func (pc *PortalCreate) createSpec() (*Portal, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint32,
 					Column: account.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.MetadataIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   portal.MetadataTable,
+			Columns: []string{portal.MetadataColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portalmetadata.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.LegalIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   portal.LegalTable,
+			Columns: []string{portal.LegalColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portallegal.FieldID,
 				},
 			},
 		}

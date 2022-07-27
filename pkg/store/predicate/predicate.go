@@ -15,6 +15,12 @@ type AccountField func(*sql.Selector)
 // Portal is the predicate function for portal builders.
 type Portal func(*sql.Selector)
 
+// PortalLegal is the predicate function for portallegal builders.
+type PortalLegal func(*sql.Selector)
+
+// PortalMetadata is the predicate function for portalmetadata builders.
+type PortalMetadata func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
 

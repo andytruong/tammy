@@ -11,9 +11,9 @@ const (
 	Label = "portal"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	// FieldCreatedAt holds the string denoting the createdat field in the database.
 	FieldCreatedAt = "created_at"
-	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
+	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
 	FieldUpdatedAt = "updated_at"
 	// FieldIsActive holds the string denoting the isactive field in the database.
 	FieldIsActive = "is_active"
@@ -21,6 +21,10 @@ const (
 	FieldSlug = "slug"
 	// EdgeMembers holds the string denoting the members edge name in mutations.
 	EdgeMembers = "members"
+	// EdgeMetadata holds the string denoting the metadata edge name in mutations.
+	EdgeMetadata = "metadata"
+	// EdgeLegal holds the string denoting the legal edge name in mutations.
+	EdgeLegal = "legal"
 	// Table holds the table name of the portal in the database.
 	Table = "portals"
 	// MembersTable is the table that holds the members relation/edge. The primary key declared below.
@@ -28,6 +32,20 @@ const (
 	// MembersInverseTable is the table name for the Account entity.
 	// It exists in this package in order to avoid circular dependency with the "account" package.
 	MembersInverseTable = "accounts"
+	// MetadataTable is the table that holds the metadata relation/edge.
+	MetadataTable = "portal_metadata"
+	// MetadataInverseTable is the table name for the PortalMetadata entity.
+	// It exists in this package in order to avoid circular dependency with the "portalmetadata" package.
+	MetadataInverseTable = "portal_metadata"
+	// MetadataColumn is the table column denoting the metadata relation/edge.
+	MetadataColumn = "portal_metadata"
+	// LegalTable is the table that holds the legal relation/edge.
+	LegalTable = "portal_legals"
+	// LegalInverseTable is the table name for the PortalLegal entity.
+	// It exists in this package in order to avoid circular dependency with the "portallegal" package.
+	LegalInverseTable = "portal_legals"
+	// LegalColumn is the table column denoting the legal relation/edge.
+	LegalColumn = "portal_legal"
 )
 
 // Columns holds all SQL columns for portal fields.
@@ -56,9 +74,9 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
+	// DefaultCreatedAt holds the default value on creation for the "createdAt" field.
 	DefaultCreatedAt func() time.Time
-	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
+	// DefaultUpdatedAt holds the default value on creation for the "updatedAt" field.
 	DefaultUpdatedAt func() time.Time
 	// DefaultIsActive holds the default value on creation for the "isActive" field.
 	DefaultIsActive bool

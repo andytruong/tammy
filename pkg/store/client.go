@@ -12,6 +12,8 @@ import (
 	"tammy/pkg/store/account"
 	"tammy/pkg/store/accountfield"
 	"tammy/pkg/store/portal"
+	"tammy/pkg/store/portallegal"
+	"tammy/pkg/store/portalmetadata"
 	"tammy/pkg/store/user"
 	"tammy/pkg/store/useremail"
 	"tammy/pkg/store/userpassword"
@@ -32,6 +34,10 @@ type Client struct {
 	AccountField *AccountFieldClient
 	// Portal is the client for interacting with the Portal builders.
 	Portal *PortalClient
+	// PortalLegal is the client for interacting with the PortalLegal builders.
+	PortalLegal *PortalLegalClient
+	// PortalMetadata is the client for interacting with the PortalMetadata builders.
+	PortalMetadata *PortalMetadataClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserEmail is the client for interacting with the UserEmail builders.
@@ -54,6 +60,8 @@ func (c *Client) init() {
 	c.Account = NewAccountClient(c.config)
 	c.AccountField = NewAccountFieldClient(c.config)
 	c.Portal = NewPortalClient(c.config)
+	c.PortalLegal = NewPortalLegalClient(c.config)
+	c.PortalMetadata = NewPortalMetadataClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.UserEmail = NewUserEmailClient(c.config)
 	c.UserPassword = NewUserPasswordClient(c.config)
@@ -88,14 +96,16 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:          ctx,
-		config:       cfg,
-		Account:      NewAccountClient(cfg),
-		AccountField: NewAccountFieldClient(cfg),
-		Portal:       NewPortalClient(cfg),
-		User:         NewUserClient(cfg),
-		UserEmail:    NewUserEmailClient(cfg),
-		UserPassword: NewUserPasswordClient(cfg),
+		ctx:            ctx,
+		config:         cfg,
+		Account:        NewAccountClient(cfg),
+		AccountField:   NewAccountFieldClient(cfg),
+		Portal:         NewPortalClient(cfg),
+		PortalLegal:    NewPortalLegalClient(cfg),
+		PortalMetadata: NewPortalMetadataClient(cfg),
+		User:           NewUserClient(cfg),
+		UserEmail:      NewUserEmailClient(cfg),
+		UserPassword:   NewUserPasswordClient(cfg),
 	}, nil
 }
 
@@ -113,14 +123,16 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:          ctx,
-		config:       cfg,
-		Account:      NewAccountClient(cfg),
-		AccountField: NewAccountFieldClient(cfg),
-		Portal:       NewPortalClient(cfg),
-		User:         NewUserClient(cfg),
-		UserEmail:    NewUserEmailClient(cfg),
-		UserPassword: NewUserPasswordClient(cfg),
+		ctx:            ctx,
+		config:         cfg,
+		Account:        NewAccountClient(cfg),
+		AccountField:   NewAccountFieldClient(cfg),
+		Portal:         NewPortalClient(cfg),
+		PortalLegal:    NewPortalLegalClient(cfg),
+		PortalMetadata: NewPortalMetadataClient(cfg),
+		User:           NewUserClient(cfg),
+		UserEmail:      NewUserEmailClient(cfg),
+		UserPassword:   NewUserPasswordClient(cfg),
 	}, nil
 }
 
@@ -153,6 +165,8 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Account.Use(hooks...)
 	c.AccountField.Use(hooks...)
 	c.Portal.Use(hooks...)
+	c.PortalLegal.Use(hooks...)
+	c.PortalMetadata.Use(hooks...)
 	c.User.Use(hooks...)
 	c.UserEmail.Use(hooks...)
 	c.UserPassword.Use(hooks...)
@@ -503,9 +517,253 @@ func (c *PortalClient) QueryMembers(po *Portal) *AccountQuery {
 	return query
 }
 
+// QueryMetadata queries the metadata edge of a Portal.
+func (c *PortalClient) QueryMetadata(po *Portal) *PortalMetadataQuery {
+	query := &PortalMetadataQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := po.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(portal.Table, portal.FieldID, id),
+			sqlgraph.To(portalmetadata.Table, portalmetadata.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, portal.MetadataTable, portal.MetadataColumn),
+		)
+		fromV = sqlgraph.Neighbors(po.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryLegal queries the legal edge of a Portal.
+func (c *PortalClient) QueryLegal(po *Portal) *PortalLegalQuery {
+	query := &PortalLegalQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := po.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(portal.Table, portal.FieldID, id),
+			sqlgraph.To(portallegal.Table, portallegal.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, portal.LegalTable, portal.LegalColumn),
+		)
+		fromV = sqlgraph.Neighbors(po.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PortalClient) Hooks() []Hook {
 	return c.hooks.Portal
+}
+
+// PortalLegalClient is a client for the PortalLegal schema.
+type PortalLegalClient struct {
+	config
+}
+
+// NewPortalLegalClient returns a client for the PortalLegal from the given config.
+func NewPortalLegalClient(c config) *PortalLegalClient {
+	return &PortalLegalClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `portallegal.Hooks(f(g(h())))`.
+func (c *PortalLegalClient) Use(hooks ...Hook) {
+	c.hooks.PortalLegal = append(c.hooks.PortalLegal, hooks...)
+}
+
+// Create returns a builder for creating a PortalLegal entity.
+func (c *PortalLegalClient) Create() *PortalLegalCreate {
+	mutation := newPortalLegalMutation(c.config, OpCreate)
+	return &PortalLegalCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PortalLegal entities.
+func (c *PortalLegalClient) CreateBulk(builders ...*PortalLegalCreate) *PortalLegalCreateBulk {
+	return &PortalLegalCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PortalLegal.
+func (c *PortalLegalClient) Update() *PortalLegalUpdate {
+	mutation := newPortalLegalMutation(c.config, OpUpdate)
+	return &PortalLegalUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PortalLegalClient) UpdateOne(pl *PortalLegal) *PortalLegalUpdateOne {
+	mutation := newPortalLegalMutation(c.config, OpUpdateOne, withPortalLegal(pl))
+	return &PortalLegalUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PortalLegalClient) UpdateOneID(id uint32) *PortalLegalUpdateOne {
+	mutation := newPortalLegalMutation(c.config, OpUpdateOne, withPortalLegalID(id))
+	return &PortalLegalUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PortalLegal.
+func (c *PortalLegalClient) Delete() *PortalLegalDelete {
+	mutation := newPortalLegalMutation(c.config, OpDelete)
+	return &PortalLegalDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PortalLegalClient) DeleteOne(pl *PortalLegal) *PortalLegalDeleteOne {
+	return c.DeleteOneID(pl.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *PortalLegalClient) DeleteOneID(id uint32) *PortalLegalDeleteOne {
+	builder := c.Delete().Where(portallegal.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PortalLegalDeleteOne{builder}
+}
+
+// Query returns a query builder for PortalLegal.
+func (c *PortalLegalClient) Query() *PortalLegalQuery {
+	return &PortalLegalQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a PortalLegal entity by its id.
+func (c *PortalLegalClient) Get(ctx context.Context, id uint32) (*PortalLegal, error) {
+	return c.Query().Where(portallegal.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PortalLegalClient) GetX(ctx context.Context, id uint32) *PortalLegal {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryPortal queries the portal edge of a PortalLegal.
+func (c *PortalLegalClient) QueryPortal(pl *PortalLegal) *PortalQuery {
+	query := &PortalQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(portallegal.Table, portallegal.FieldID, id),
+			sqlgraph.To(portal.Table, portal.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, portallegal.PortalTable, portallegal.PortalColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PortalLegalClient) Hooks() []Hook {
+	return c.hooks.PortalLegal
+}
+
+// PortalMetadataClient is a client for the PortalMetadata schema.
+type PortalMetadataClient struct {
+	config
+}
+
+// NewPortalMetadataClient returns a client for the PortalMetadata from the given config.
+func NewPortalMetadataClient(c config) *PortalMetadataClient {
+	return &PortalMetadataClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `portalmetadata.Hooks(f(g(h())))`.
+func (c *PortalMetadataClient) Use(hooks ...Hook) {
+	c.hooks.PortalMetadata = append(c.hooks.PortalMetadata, hooks...)
+}
+
+// Create returns a builder for creating a PortalMetadata entity.
+func (c *PortalMetadataClient) Create() *PortalMetadataCreate {
+	mutation := newPortalMetadataMutation(c.config, OpCreate)
+	return &PortalMetadataCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PortalMetadata entities.
+func (c *PortalMetadataClient) CreateBulk(builders ...*PortalMetadataCreate) *PortalMetadataCreateBulk {
+	return &PortalMetadataCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PortalMetadata.
+func (c *PortalMetadataClient) Update() *PortalMetadataUpdate {
+	mutation := newPortalMetadataMutation(c.config, OpUpdate)
+	return &PortalMetadataUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PortalMetadataClient) UpdateOne(pm *PortalMetadata) *PortalMetadataUpdateOne {
+	mutation := newPortalMetadataMutation(c.config, OpUpdateOne, withPortalMetadata(pm))
+	return &PortalMetadataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PortalMetadataClient) UpdateOneID(id uint32) *PortalMetadataUpdateOne {
+	mutation := newPortalMetadataMutation(c.config, OpUpdateOne, withPortalMetadataID(id))
+	return &PortalMetadataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PortalMetadata.
+func (c *PortalMetadataClient) Delete() *PortalMetadataDelete {
+	mutation := newPortalMetadataMutation(c.config, OpDelete)
+	return &PortalMetadataDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PortalMetadataClient) DeleteOne(pm *PortalMetadata) *PortalMetadataDeleteOne {
+	return c.DeleteOneID(pm.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *PortalMetadataClient) DeleteOneID(id uint32) *PortalMetadataDeleteOne {
+	builder := c.Delete().Where(portalmetadata.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PortalMetadataDeleteOne{builder}
+}
+
+// Query returns a query builder for PortalMetadata.
+func (c *PortalMetadataClient) Query() *PortalMetadataQuery {
+	return &PortalMetadataQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a PortalMetadata entity by its id.
+func (c *PortalMetadataClient) Get(ctx context.Context, id uint32) (*PortalMetadata, error) {
+	return c.Query().Where(portalmetadata.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PortalMetadataClient) GetX(ctx context.Context, id uint32) *PortalMetadata {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryPortal queries the portal edge of a PortalMetadata.
+func (c *PortalMetadataClient) QueryPortal(pm *PortalMetadata) *PortalQuery {
+	query := &PortalQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pm.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(portalmetadata.Table, portalmetadata.FieldID, id),
+			sqlgraph.To(portal.Table, portal.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, portalmetadata.PortalTable, portalmetadata.PortalColumn),
+		)
+		fromV = sqlgraph.Neighbors(pm.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PortalMetadataClient) Hooks() []Hook {
+	return c.hooks.PortalMetadata
 }
 
 // UserClient is a client for the User schema.

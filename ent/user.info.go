@@ -22,10 +22,10 @@ func (UserEmail) Fields() []ent.Field {
 			Immutable().
 			Unique().
 			Annotations(entproto.Field(2)),
-		field.Time("created_at").
+		field.Time("createdAt").
 			Immutable().
 			Annotations(entproto.Field(3)),
-		field.Bool("is_verified").
+		field.Bool("isVerified").
 			Immutable().
 			Annotations(entproto.Field(4)),
 	}

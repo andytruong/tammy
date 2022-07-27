@@ -88,14 +88,14 @@ func Value(v string) predicate.UserEmail {
 	})
 }
 
-// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+// CreatedAt applies equality check predicate on the "createdAt" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.UserEmail {
 	return predicate.UserEmail(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
 	})
 }
 
-// IsVerified applies equality check predicate on the "is_verified" field. It's identical to IsVerifiedEQ.
+// IsVerified applies equality check predicate on the "isVerified" field. It's identical to IsVerifiedEQ.
 func IsVerified(v bool) predicate.UserEmail {
 	return predicate.UserEmail(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldIsVerified), v))
@@ -213,21 +213,21 @@ func ValueContainsFold(v string) predicate.UserEmail {
 	})
 }
 
-// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+// CreatedAtEQ applies the EQ predicate on the "createdAt" field.
 func CreatedAtEQ(v time.Time) predicate.UserEmail {
 	return predicate.UserEmail(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
 	})
 }
 
-// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+// CreatedAtNEQ applies the NEQ predicate on the "createdAt" field.
 func CreatedAtNEQ(v time.Time) predicate.UserEmail {
 	return predicate.UserEmail(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
 	})
 }
 
-// CreatedAtIn applies the In predicate on the "created_at" field.
+// CreatedAtIn applies the In predicate on the "createdAt" field.
 func CreatedAtIn(vs ...time.Time) predicate.UserEmail {
 	v := make([]interface{}, len(vs))
 	for i := range v {
@@ -244,7 +244,7 @@ func CreatedAtIn(vs ...time.Time) predicate.UserEmail {
 	})
 }
 
-// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+// CreatedAtNotIn applies the NotIn predicate on the "createdAt" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.UserEmail {
 	v := make([]interface{}, len(vs))
 	for i := range v {
@@ -261,42 +261,42 @@ func CreatedAtNotIn(vs ...time.Time) predicate.UserEmail {
 	})
 }
 
-// CreatedAtGT applies the GT predicate on the "created_at" field.
+// CreatedAtGT applies the GT predicate on the "createdAt" field.
 func CreatedAtGT(v time.Time) predicate.UserEmail {
 	return predicate.UserEmail(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldCreatedAt), v))
 	})
 }
 
-// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+// CreatedAtGTE applies the GTE predicate on the "createdAt" field.
 func CreatedAtGTE(v time.Time) predicate.UserEmail {
 	return predicate.UserEmail(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
 	})
 }
 
-// CreatedAtLT applies the LT predicate on the "created_at" field.
+// CreatedAtLT applies the LT predicate on the "createdAt" field.
 func CreatedAtLT(v time.Time) predicate.UserEmail {
 	return predicate.UserEmail(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldCreatedAt), v))
 	})
 }
 
-// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+// CreatedAtLTE applies the LTE predicate on the "createdAt" field.
 func CreatedAtLTE(v time.Time) predicate.UserEmail {
 	return predicate.UserEmail(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
 	})
 }
 
-// IsVerifiedEQ applies the EQ predicate on the "is_verified" field.
+// IsVerifiedEQ applies the EQ predicate on the "isVerified" field.
 func IsVerifiedEQ(v bool) predicate.UserEmail {
 	return predicate.UserEmail(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldIsVerified), v))
 	})
 }
 
-// IsVerifiedNEQ applies the NEQ predicate on the "is_verified" field.
+// IsVerifiedNEQ applies the NEQ predicate on the "isVerified" field.
 func IsVerifiedNEQ(v bool) predicate.UserEmail {
 	return predicate.UserEmail(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldIsVerified), v))

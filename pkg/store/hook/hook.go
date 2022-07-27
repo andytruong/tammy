@@ -47,6 +47,32 @@ func (f PortalFunc) Mutate(ctx context.Context, m store.Mutation) (store.Value, 
 	return f(ctx, mv)
 }
 
+// The PortalLegalFunc type is an adapter to allow the use of ordinary
+// function as PortalLegal mutator.
+type PortalLegalFunc func(context.Context, *store.PortalLegalMutation) (store.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PortalLegalFunc) Mutate(ctx context.Context, m store.Mutation) (store.Value, error) {
+	mv, ok := m.(*store.PortalLegalMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *store.PortalLegalMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The PortalMetadataFunc type is an adapter to allow the use of ordinary
+// function as PortalMetadata mutator.
+type PortalMetadataFunc func(context.Context, *store.PortalMetadataMutation) (store.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PortalMetadataFunc) Mutate(ctx context.Context, m store.Mutation) (store.Value, error) {
+	mv, ok := m.(*store.PortalMetadataMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *store.PortalMetadataMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *store.UserMutation) (store.Value, error)

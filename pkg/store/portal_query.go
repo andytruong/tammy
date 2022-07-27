@@ -9,6 +9,8 @@ import (
 	"math"
 	"tammy/pkg/store/account"
 	"tammy/pkg/store/portal"
+	"tammy/pkg/store/portallegal"
+	"tammy/pkg/store/portalmetadata"
 	"tammy/pkg/store/predicate"
 
 	"entgo.io/ent/dialect/sql"
@@ -26,7 +28,9 @@ type PortalQuery struct {
 	fields     []string
 	predicates []predicate.Portal
 	// eager-loading edges.
-	withMembers *AccountQuery
+	withMembers  *AccountQuery
+	withMetadata *PortalMetadataQuery
+	withLegal    *PortalLegalQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -78,6 +82,50 @@ func (pq *PortalQuery) QueryMembers() *AccountQuery {
 			sqlgraph.From(portal.Table, portal.FieldID, selector),
 			sqlgraph.To(account.Table, account.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, portal.MembersTable, portal.MembersPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryMetadata chains the current query on the "metadata" edge.
+func (pq *PortalQuery) QueryMetadata() *PortalMetadataQuery {
+	query := &PortalMetadataQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(portal.Table, portal.FieldID, selector),
+			sqlgraph.To(portalmetadata.Table, portalmetadata.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, portal.MetadataTable, portal.MetadataColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryLegal chains the current query on the "legal" edge.
+func (pq *PortalQuery) QueryLegal() *PortalLegalQuery {
+	query := &PortalLegalQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(portal.Table, portal.FieldID, selector),
+			sqlgraph.To(portallegal.Table, portallegal.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, portal.LegalTable, portal.LegalColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -261,12 +309,14 @@ func (pq *PortalQuery) Clone() *PortalQuery {
 		return nil
 	}
 	return &PortalQuery{
-		config:      pq.config,
-		limit:       pq.limit,
-		offset:      pq.offset,
-		order:       append([]OrderFunc{}, pq.order...),
-		predicates:  append([]predicate.Portal{}, pq.predicates...),
-		withMembers: pq.withMembers.Clone(),
+		config:       pq.config,
+		limit:        pq.limit,
+		offset:       pq.offset,
+		order:        append([]OrderFunc{}, pq.order...),
+		predicates:   append([]predicate.Portal{}, pq.predicates...),
+		withMembers:  pq.withMembers.Clone(),
+		withMetadata: pq.withMetadata.Clone(),
+		withLegal:    pq.withLegal.Clone(),
 		// clone intermediate query.
 		sql:    pq.sql.Clone(),
 		path:   pq.path,
@@ -285,13 +335,35 @@ func (pq *PortalQuery) WithMembers(opts ...func(*AccountQuery)) *PortalQuery {
 	return pq
 }
 
+// WithMetadata tells the query-builder to eager-load the nodes that are connected to
+// the "metadata" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PortalQuery) WithMetadata(opts ...func(*PortalMetadataQuery)) *PortalQuery {
+	query := &PortalMetadataQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withMetadata = query
+	return pq
+}
+
+// WithLegal tells the query-builder to eager-load the nodes that are connected to
+// the "legal" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PortalQuery) WithLegal(opts ...func(*PortalLegalQuery)) *PortalQuery {
+	query := &PortalLegalQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withLegal = query
+	return pq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -320,7 +392,7 @@ func (pq *PortalQuery) GroupBy(field string, fields ...string) *PortalGroupBy {
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //	}
 //
 //	client.Portal.Query().
@@ -355,8 +427,10 @@ func (pq *PortalQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Porta
 	var (
 		nodes       = []*Portal{}
 		_spec       = pq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [3]bool{
 			pq.withMembers != nil,
+			pq.withMetadata != nil,
+			pq.withLegal != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -428,6 +502,64 @@ func (pq *PortalQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Porta
 			for kn := range nodes {
 				kn.Edges.Members = append(kn.Edges.Members, n)
 			}
+		}
+	}
+
+	if query := pq.withMetadata; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint32]*Portal)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Metadata = []*PortalMetadata{}
+		}
+		query.withFKs = true
+		query.Where(predicate.PortalMetadata(func(s *sql.Selector) {
+			s.Where(sql.InValues(portal.MetadataColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.portal_metadata
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "portal_metadata" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "portal_metadata" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Metadata = append(node.Edges.Metadata, n)
+		}
+	}
+
+	if query := pq.withLegal; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint32]*Portal)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Legal = []*PortalLegal{}
+		}
+		query.withFKs = true
+		query.Where(predicate.PortalLegal(func(s *sql.Selector) {
+			s.Where(sql.InValues(portal.LegalColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.portal_legal
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "portal_legal" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "portal_legal" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Legal = append(node.Edges.Legal, n)
 		}
 	}
 

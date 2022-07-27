@@ -2,7 +2,7 @@ package ent
 
 import (
 	"time"
-
+	
 	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
@@ -23,11 +23,11 @@ func (User) Fields() []ent.Field {
 		field.Bool("isActive").
 			Default(true).
 			Annotations(entproto.Field(2)),
-		field.Time("created_at").
+		field.Time("createdAt").
 			Immutable().
 			Default(time.Now).
 			Annotations(entproto.Field(3)),
-		field.Time("updated_at").
+		field.Time("updatedAt").
 			Immutable().
 			Default(time.Now).
 			Annotations(entproto.Field(4)),

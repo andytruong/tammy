@@ -19,10 +19,10 @@ type UserEmail struct {
 	ID uint32 `json:"id,omitempty"`
 	// Value holds the value of the "value" field.
 	Value string `json:"value,omitempty"`
-	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	// IsVerified holds the value of the "is_verified" field.
-	IsVerified bool `json:"is_verified,omitempty"`
+	// CreatedAt holds the value of the "createdAt" field.
+	CreatedAt time.Time `json:"createdAt,omitempty"`
+	// IsVerified holds the value of the "isVerified" field.
+	IsVerified bool `json:"isVerified,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserEmailQuery when eager-loading is set.
 	Edges       UserEmailEdges `json:"edges"`
@@ -96,13 +96,13 @@ func (ue *UserEmail) assignValues(columns []string, values []interface{}) error 
 			}
 		case useremail.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+				return fmt.Errorf("unexpected type %T for field createdAt", values[i])
 			} else if value.Valid {
 				ue.CreatedAt = value.Time
 			}
 		case useremail.FieldIsVerified:
 			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field is_verified", values[i])
+				return fmt.Errorf("unexpected type %T for field isVerified", values[i])
 			} else if value.Valid {
 				ue.IsVerified = value.Bool
 			}
@@ -149,10 +149,10 @@ func (ue *UserEmail) String() string {
 	builder.WriteString("value=")
 	builder.WriteString(ue.Value)
 	builder.WriteString(", ")
-	builder.WriteString("created_at=")
+	builder.WriteString("createdAt=")
 	builder.WriteString(ue.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("is_verified=")
+	builder.WriteString("isVerified=")
 	builder.WriteString(fmt.Sprintf("%v", ue.IsVerified))
 	builder.WriteByte(')')
 	return builder.String()

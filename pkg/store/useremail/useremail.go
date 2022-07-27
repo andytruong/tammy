@@ -9,9 +9,9 @@ const (
 	FieldID = "id"
 	// FieldValue holds the string denoting the value field in the database.
 	FieldValue = "value"
-	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	// FieldCreatedAt holds the string denoting the createdat field in the database.
 	FieldCreatedAt = "created_at"
-	// FieldIsVerified holds the string denoting the is_verified field in the database.
+	// FieldIsVerified holds the string denoting the isverified field in the database.
 	FieldIsVerified = "is_verified"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"

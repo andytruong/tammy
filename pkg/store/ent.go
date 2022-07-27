@@ -9,6 +9,8 @@ import (
 	"tammy/pkg/store/account"
 	"tammy/pkg/store/accountfield"
 	"tammy/pkg/store/portal"
+	"tammy/pkg/store/portallegal"
+	"tammy/pkg/store/portalmetadata"
 	"tammy/pkg/store/user"
 	"tammy/pkg/store/useremail"
 	"tammy/pkg/store/userpassword"
@@ -36,12 +38,14 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		account.Table:      account.ValidColumn,
-		accountfield.Table: accountfield.ValidColumn,
-		portal.Table:       portal.ValidColumn,
-		user.Table:         user.ValidColumn,
-		useremail.Table:    useremail.ValidColumn,
-		userpassword.Table: userpassword.ValidColumn,
+		account.Table:        account.ValidColumn,
+		accountfield.Table:   accountfield.ValidColumn,
+		portal.Table:         portal.ValidColumn,
+		portallegal.Table:    portallegal.ValidColumn,
+		portalmetadata.Table: portalmetadata.ValidColumn,
+		user.Table:           user.ValidColumn,
+		useremail.Table:      useremail.ValidColumn,
+		userpassword.Table:   userpassword.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

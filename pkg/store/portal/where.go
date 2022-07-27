@@ -81,14 +81,14 @@ func IDLTE(id uint32) predicate.Portal {
 	})
 }
 
-// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+// CreatedAt applies equality check predicate on the "createdAt" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Portal {
 	return predicate.Portal(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
 	})
 }
 
-// UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
+// UpdatedAt applies equality check predicate on the "updatedAt" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Portal {
 	return predicate.Portal(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
@@ -109,21 +109,21 @@ func Slug(v string) predicate.Portal {
 	})
 }
 
-// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+// CreatedAtEQ applies the EQ predicate on the "createdAt" field.
 func CreatedAtEQ(v time.Time) predicate.Portal {
 	return predicate.Portal(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
 	})
 }
 
-// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+// CreatedAtNEQ applies the NEQ predicate on the "createdAt" field.
 func CreatedAtNEQ(v time.Time) predicate.Portal {
 	return predicate.Portal(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
 	})
 }
 
-// CreatedAtIn applies the In predicate on the "created_at" field.
+// CreatedAtIn applies the In predicate on the "createdAt" field.
 func CreatedAtIn(vs ...time.Time) predicate.Portal {
 	v := make([]interface{}, len(vs))
 	for i := range v {
@@ -140,7 +140,7 @@ func CreatedAtIn(vs ...time.Time) predicate.Portal {
 	})
 }
 
-// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+// CreatedAtNotIn applies the NotIn predicate on the "createdAt" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Portal {
 	v := make([]interface{}, len(vs))
 	for i := range v {
@@ -157,49 +157,49 @@ func CreatedAtNotIn(vs ...time.Time) predicate.Portal {
 	})
 }
 
-// CreatedAtGT applies the GT predicate on the "created_at" field.
+// CreatedAtGT applies the GT predicate on the "createdAt" field.
 func CreatedAtGT(v time.Time) predicate.Portal {
 	return predicate.Portal(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldCreatedAt), v))
 	})
 }
 
-// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+// CreatedAtGTE applies the GTE predicate on the "createdAt" field.
 func CreatedAtGTE(v time.Time) predicate.Portal {
 	return predicate.Portal(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
 	})
 }
 
-// CreatedAtLT applies the LT predicate on the "created_at" field.
+// CreatedAtLT applies the LT predicate on the "createdAt" field.
 func CreatedAtLT(v time.Time) predicate.Portal {
 	return predicate.Portal(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldCreatedAt), v))
 	})
 }
 
-// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+// CreatedAtLTE applies the LTE predicate on the "createdAt" field.
 func CreatedAtLTE(v time.Time) predicate.Portal {
 	return predicate.Portal(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
 	})
 }
 
-// UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
+// UpdatedAtEQ applies the EQ predicate on the "updatedAt" field.
 func UpdatedAtEQ(v time.Time) predicate.Portal {
 	return predicate.Portal(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
 	})
 }
 
-// UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
+// UpdatedAtNEQ applies the NEQ predicate on the "updatedAt" field.
 func UpdatedAtNEQ(v time.Time) predicate.Portal {
 	return predicate.Portal(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
 	})
 }
 
-// UpdatedAtIn applies the In predicate on the "updated_at" field.
+// UpdatedAtIn applies the In predicate on the "updatedAt" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Portal {
 	v := make([]interface{}, len(vs))
 	for i := range v {
@@ -216,7 +216,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.Portal {
 	})
 }
 
-// UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
+// UpdatedAtNotIn applies the NotIn predicate on the "updatedAt" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Portal {
 	v := make([]interface{}, len(vs))
 	for i := range v {
@@ -233,28 +233,28 @@ func UpdatedAtNotIn(vs ...time.Time) predicate.Portal {
 	})
 }
 
-// UpdatedAtGT applies the GT predicate on the "updated_at" field.
+// UpdatedAtGT applies the GT predicate on the "updatedAt" field.
 func UpdatedAtGT(v time.Time) predicate.Portal {
 	return predicate.Portal(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
 	})
 }
 
-// UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
+// UpdatedAtGTE applies the GTE predicate on the "updatedAt" field.
 func UpdatedAtGTE(v time.Time) predicate.Portal {
 	return predicate.Portal(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
 	})
 }
 
-// UpdatedAtLT applies the LT predicate on the "updated_at" field.
+// UpdatedAtLT applies the LT predicate on the "updatedAt" field.
 func UpdatedAtLT(v time.Time) predicate.Portal {
 	return predicate.Portal(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
 	})
 }
 
-// UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
+// UpdatedAtLTE applies the LTE predicate on the "updatedAt" field.
 func UpdatedAtLTE(v time.Time) predicate.Portal {
 	return predicate.Portal(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
@@ -405,6 +405,62 @@ func HasMembersWith(preds ...predicate.Account) predicate.Portal {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(MembersInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, MembersTable, MembersPrimaryKey...),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasMetadata applies the HasEdge predicate on the "metadata" edge.
+func HasMetadata() predicate.Portal {
+	return predicate.Portal(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(MetadataTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, MetadataTable, MetadataColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMetadataWith applies the HasEdge predicate on the "metadata" edge with a given conditions (other predicates).
+func HasMetadataWith(preds ...predicate.PortalMetadata) predicate.Portal {
+	return predicate.Portal(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(MetadataInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, MetadataTable, MetadataColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasLegal applies the HasEdge predicate on the "legal" edge.
+func HasLegal() predicate.Portal {
+	return predicate.Portal(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(LegalTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, LegalTable, LegalColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasLegalWith applies the HasEdge predicate on the "legal" edge with a given conditions (other predicates).
+func HasLegalWith(preds ...predicate.PortalLegal) predicate.Portal {
+	return predicate.Portal(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(LegalInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, LegalTable, LegalColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

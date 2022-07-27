@@ -16,10 +16,10 @@ type Portal struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uint32 `json:"id,omitempty"`
-	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// CreatedAt holds the value of the "createdAt" field.
+	CreatedAt time.Time `json:"createdAt,omitempty"`
+	// UpdatedAt holds the value of the "updatedAt" field.
+	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// IsActive holds the value of the "isActive" field.
 	IsActive bool `json:"isActive,omitempty"`
 	// Slug holds the value of the "slug" field.
@@ -33,9 +33,13 @@ type Portal struct {
 type PortalEdges struct {
 	// Members holds the value of the members edge.
 	Members []*Account `json:"members,omitempty"`
+	// Metadata holds the value of the metadata edge.
+	Metadata []*PortalMetadata `json:"metadata,omitempty"`
+	// Legal holds the value of the legal edge.
+	Legal []*PortalLegal `json:"legal,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [3]bool
 }
 
 // MembersOrErr returns the Members value or an error if the edge
@@ -45,6 +49,24 @@ func (e PortalEdges) MembersOrErr() ([]*Account, error) {
 		return e.Members, nil
 	}
 	return nil, &NotLoadedError{edge: "members"}
+}
+
+// MetadataOrErr returns the Metadata value or an error if the edge
+// was not loaded in eager-loading.
+func (e PortalEdges) MetadataOrErr() ([]*PortalMetadata, error) {
+	if e.loadedTypes[1] {
+		return e.Metadata, nil
+	}
+	return nil, &NotLoadedError{edge: "metadata"}
+}
+
+// LegalOrErr returns the Legal value or an error if the edge
+// was not loaded in eager-loading.
+func (e PortalEdges) LegalOrErr() ([]*PortalLegal, error) {
+	if e.loadedTypes[2] {
+		return e.Legal, nil
+	}
+	return nil, &NotLoadedError{edge: "legal"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -83,13 +105,13 @@ func (po *Portal) assignValues(columns []string, values []interface{}) error {
 			po.ID = uint32(value.Int64)
 		case portal.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+				return fmt.Errorf("unexpected type %T for field createdAt", values[i])
 			} else if value.Valid {
 				po.CreatedAt = value.Time
 			}
 		case portal.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+				return fmt.Errorf("unexpected type %T for field updatedAt", values[i])
 			} else if value.Valid {
 				po.UpdatedAt = value.Time
 			}
@@ -115,6 +137,16 @@ func (po *Portal) QueryMembers() *AccountQuery {
 	return (&PortalClient{config: po.config}).QueryMembers(po)
 }
 
+// QueryMetadata queries the "metadata" edge of the Portal entity.
+func (po *Portal) QueryMetadata() *PortalMetadataQuery {
+	return (&PortalClient{config: po.config}).QueryMetadata(po)
+}
+
+// QueryLegal queries the "legal" edge of the Portal entity.
+func (po *Portal) QueryLegal() *PortalLegalQuery {
+	return (&PortalClient{config: po.config}).QueryLegal(po)
+}
+
 // Update returns a builder for updating this Portal.
 // Note that you need to call Portal.Unwrap() before calling this method if this Portal
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -138,10 +170,10 @@ func (po *Portal) String() string {
 	var builder strings.Builder
 	builder.WriteString("Portal(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", po.ID))
-	builder.WriteString("created_at=")
+	builder.WriteString("createdAt=")
 	builder.WriteString(po.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("updated_at=")
+	builder.WriteString("updatedAt=")
 	builder.WriteString(po.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("isActive=")

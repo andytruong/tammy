@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"tammy/pkg/store/account"
 	"tammy/pkg/store/portal"
+	"tammy/pkg/store/portallegal"
+	"tammy/pkg/store/portalmetadata"
 	"tammy/pkg/store/predicate"
 
 	"entgo.io/ent/dialect/sql"
@@ -57,6 +59,36 @@ func (pu *PortalUpdate) AddMembers(a ...*Account) *PortalUpdate {
 	return pu.AddMemberIDs(ids...)
 }
 
+// AddMetadatumIDs adds the "metadata" edge to the PortalMetadata entity by IDs.
+func (pu *PortalUpdate) AddMetadatumIDs(ids ...uint32) *PortalUpdate {
+	pu.mutation.AddMetadatumIDs(ids...)
+	return pu
+}
+
+// AddMetadata adds the "metadata" edges to the PortalMetadata entity.
+func (pu *PortalUpdate) AddMetadata(p ...*PortalMetadata) *PortalUpdate {
+	ids := make([]uint32, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.AddMetadatumIDs(ids...)
+}
+
+// AddLegalIDs adds the "legal" edge to the PortalLegal entity by IDs.
+func (pu *PortalUpdate) AddLegalIDs(ids ...uint32) *PortalUpdate {
+	pu.mutation.AddLegalIDs(ids...)
+	return pu
+}
+
+// AddLegal adds the "legal" edges to the PortalLegal entity.
+func (pu *PortalUpdate) AddLegal(p ...*PortalLegal) *PortalUpdate {
+	ids := make([]uint32, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.AddLegalIDs(ids...)
+}
+
 // Mutation returns the PortalMutation object of the builder.
 func (pu *PortalUpdate) Mutation() *PortalMutation {
 	return pu.mutation
@@ -81,6 +113,48 @@ func (pu *PortalUpdate) RemoveMembers(a ...*Account) *PortalUpdate {
 		ids[i] = a[i].ID
 	}
 	return pu.RemoveMemberIDs(ids...)
+}
+
+// ClearMetadata clears all "metadata" edges to the PortalMetadata entity.
+func (pu *PortalUpdate) ClearMetadata() *PortalUpdate {
+	pu.mutation.ClearMetadata()
+	return pu
+}
+
+// RemoveMetadatumIDs removes the "metadata" edge to PortalMetadata entities by IDs.
+func (pu *PortalUpdate) RemoveMetadatumIDs(ids ...uint32) *PortalUpdate {
+	pu.mutation.RemoveMetadatumIDs(ids...)
+	return pu
+}
+
+// RemoveMetadata removes "metadata" edges to PortalMetadata entities.
+func (pu *PortalUpdate) RemoveMetadata(p ...*PortalMetadata) *PortalUpdate {
+	ids := make([]uint32, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.RemoveMetadatumIDs(ids...)
+}
+
+// ClearLegal clears all "legal" edges to the PortalLegal entity.
+func (pu *PortalUpdate) ClearLegal() *PortalUpdate {
+	pu.mutation.ClearLegal()
+	return pu
+}
+
+// RemoveLegalIDs removes the "legal" edge to PortalLegal entities by IDs.
+func (pu *PortalUpdate) RemoveLegalIDs(ids ...uint32) *PortalUpdate {
+	pu.mutation.RemoveLegalIDs(ids...)
+	return pu
+}
+
+// RemoveLegal removes "legal" edges to PortalLegal entities.
+func (pu *PortalUpdate) RemoveLegal(p ...*PortalLegal) *PortalUpdate {
+	ids := make([]uint32, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.RemoveLegalIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -216,6 +290,114 @@ func (pu *PortalUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.MetadataCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   portal.MetadataTable,
+			Columns: []string{portal.MetadataColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portalmetadata.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedMetadataIDs(); len(nodes) > 0 && !pu.mutation.MetadataCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   portal.MetadataTable,
+			Columns: []string{portal.MetadataColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portalmetadata.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.MetadataIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   portal.MetadataTable,
+			Columns: []string{portal.MetadataColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portalmetadata.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pu.mutation.LegalCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   portal.LegalTable,
+			Columns: []string{portal.LegalColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portallegal.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedLegalIDs(); len(nodes) > 0 && !pu.mutation.LegalCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   portal.LegalTable,
+			Columns: []string{portal.LegalColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portallegal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.LegalIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   portal.LegalTable,
+			Columns: []string{portal.LegalColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portallegal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{portal.Label}
@@ -264,6 +446,36 @@ func (puo *PortalUpdateOne) AddMembers(a ...*Account) *PortalUpdateOne {
 	return puo.AddMemberIDs(ids...)
 }
 
+// AddMetadatumIDs adds the "metadata" edge to the PortalMetadata entity by IDs.
+func (puo *PortalUpdateOne) AddMetadatumIDs(ids ...uint32) *PortalUpdateOne {
+	puo.mutation.AddMetadatumIDs(ids...)
+	return puo
+}
+
+// AddMetadata adds the "metadata" edges to the PortalMetadata entity.
+func (puo *PortalUpdateOne) AddMetadata(p ...*PortalMetadata) *PortalUpdateOne {
+	ids := make([]uint32, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.AddMetadatumIDs(ids...)
+}
+
+// AddLegalIDs adds the "legal" edge to the PortalLegal entity by IDs.
+func (puo *PortalUpdateOne) AddLegalIDs(ids ...uint32) *PortalUpdateOne {
+	puo.mutation.AddLegalIDs(ids...)
+	return puo
+}
+
+// AddLegal adds the "legal" edges to the PortalLegal entity.
+func (puo *PortalUpdateOne) AddLegal(p ...*PortalLegal) *PortalUpdateOne {
+	ids := make([]uint32, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.AddLegalIDs(ids...)
+}
+
 // Mutation returns the PortalMutation object of the builder.
 func (puo *PortalUpdateOne) Mutation() *PortalMutation {
 	return puo.mutation
@@ -288,6 +500,48 @@ func (puo *PortalUpdateOne) RemoveMembers(a ...*Account) *PortalUpdateOne {
 		ids[i] = a[i].ID
 	}
 	return puo.RemoveMemberIDs(ids...)
+}
+
+// ClearMetadata clears all "metadata" edges to the PortalMetadata entity.
+func (puo *PortalUpdateOne) ClearMetadata() *PortalUpdateOne {
+	puo.mutation.ClearMetadata()
+	return puo
+}
+
+// RemoveMetadatumIDs removes the "metadata" edge to PortalMetadata entities by IDs.
+func (puo *PortalUpdateOne) RemoveMetadatumIDs(ids ...uint32) *PortalUpdateOne {
+	puo.mutation.RemoveMetadatumIDs(ids...)
+	return puo
+}
+
+// RemoveMetadata removes "metadata" edges to PortalMetadata entities.
+func (puo *PortalUpdateOne) RemoveMetadata(p ...*PortalMetadata) *PortalUpdateOne {
+	ids := make([]uint32, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.RemoveMetadatumIDs(ids...)
+}
+
+// ClearLegal clears all "legal" edges to the PortalLegal entity.
+func (puo *PortalUpdateOne) ClearLegal() *PortalUpdateOne {
+	puo.mutation.ClearLegal()
+	return puo
+}
+
+// RemoveLegalIDs removes the "legal" edge to PortalLegal entities by IDs.
+func (puo *PortalUpdateOne) RemoveLegalIDs(ids ...uint32) *PortalUpdateOne {
+	puo.mutation.RemoveLegalIDs(ids...)
+	return puo
+}
+
+// RemoveLegal removes "legal" edges to PortalLegal entities.
+func (puo *PortalUpdateOne) RemoveLegal(p ...*PortalLegal) *PortalUpdateOne {
+	ids := make([]uint32, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.RemoveLegalIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -445,6 +699,114 @@ func (puo *PortalUpdateOne) sqlSave(ctx context.Context) (_node *Portal, err err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint32,
 					Column: account.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.MetadataCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   portal.MetadataTable,
+			Columns: []string{portal.MetadataColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portalmetadata.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedMetadataIDs(); len(nodes) > 0 && !puo.mutation.MetadataCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   portal.MetadataTable,
+			Columns: []string{portal.MetadataColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portalmetadata.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.MetadataIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   portal.MetadataTable,
+			Columns: []string{portal.MetadataColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portalmetadata.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.LegalCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   portal.LegalTable,
+			Columns: []string{portal.LegalColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portallegal.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedLegalIDs(); len(nodes) > 0 && !puo.mutation.LegalCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   portal.LegalTable,
+			Columns: []string{portal.LegalColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portallegal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.LegalIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   portal.LegalTable,
+			Columns: []string{portal.LegalColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portallegal.FieldID,
 				},
 			},
 		}

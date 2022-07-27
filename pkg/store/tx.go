@@ -18,6 +18,10 @@ type Tx struct {
 	AccountField *AccountFieldClient
 	// Portal is the client for interacting with the Portal builders.
 	Portal *PortalClient
+	// PortalLegal is the client for interacting with the PortalLegal builders.
+	PortalLegal *PortalLegalClient
+	// PortalMetadata is the client for interacting with the PortalMetadata builders.
+	PortalMetadata *PortalMetadataClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserEmail is the client for interacting with the UserEmail builders.
@@ -162,6 +166,8 @@ func (tx *Tx) init() {
 	tx.Account = NewAccountClient(tx.config)
 	tx.AccountField = NewAccountFieldClient(tx.config)
 	tx.Portal = NewPortalClient(tx.config)
+	tx.PortalLegal = NewPortalLegalClient(tx.config)
+	tx.PortalMetadata = NewPortalMetadataClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 	tx.UserEmail = NewUserEmailClient(tx.config)
 	tx.UserPassword = NewUserPasswordClient(tx.config)

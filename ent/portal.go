@@ -28,11 +28,11 @@ func (Portal) Fields() []ent.Field {
 			Immutable().
 			Annotations(entproto.Field(1)),
 		field.
-			Time("created_at").Default(time.Now).
+			Time("createdAt").Default(time.Now).
 			Immutable().
 			Annotations(entproto.Field(2)),
 		field.
-			Time("updated_at").Default(time.Now).
+			Time("updatedAt").Default(time.Now).
 			Immutable().
 			Annotations(entproto.Field(3)),
 		field.
@@ -52,6 +52,12 @@ func (Portal) Edges() []ent.Edge {
 		edge.
 			To("members", Account.Type).
 			Annotations(entproto.Field(400)),
+		edge.
+			To("metadata", PortalMetadata.Type).
+			Annotations(entproto.Field(401)),
+		edge.
+			To("legal", PortalLegal.Type).
+			Annotations(entproto.Field(402)),
 	}
 }
 

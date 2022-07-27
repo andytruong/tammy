@@ -27,13 +27,13 @@ func (uec *UserEmailCreate) SetValue(s string) *UserEmailCreate {
 	return uec
 }
 
-// SetCreatedAt sets the "created_at" field.
+// SetCreatedAt sets the "createdAt" field.
 func (uec *UserEmailCreate) SetCreatedAt(t time.Time) *UserEmailCreate {
 	uec.mutation.SetCreatedAt(t)
 	return uec
 }
 
-// SetIsVerified sets the "is_verified" field.
+// SetIsVerified sets the "isVerified" field.
 func (uec *UserEmailCreate) SetIsVerified(b bool) *UserEmailCreate {
 	uec.mutation.SetIsVerified(b)
 	return uec
@@ -144,10 +144,10 @@ func (uec *UserEmailCreate) check() error {
 		return &ValidationError{Name: "value", err: errors.New(`store: missing required field "UserEmail.value"`)}
 	}
 	if _, ok := uec.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`store: missing required field "UserEmail.created_at"`)}
+		return &ValidationError{Name: "createdAt", err: errors.New(`store: missing required field "UserEmail.createdAt"`)}
 	}
 	if _, ok := uec.mutation.IsVerified(); !ok {
-		return &ValidationError{Name: "is_verified", err: errors.New(`store: missing required field "UserEmail.is_verified"`)}
+		return &ValidationError{Name: "isVerified", err: errors.New(`store: missing required field "UserEmail.isVerified"`)}
 	}
 	return nil
 }

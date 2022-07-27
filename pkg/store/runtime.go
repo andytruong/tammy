@@ -5,6 +5,7 @@ package store
 import (
 	"tammy/ent"
 	"tammy/pkg/store/portal"
+	"tammy/pkg/store/portalmetadata"
 	"tammy/pkg/store/user"
 	"time"
 
@@ -17,30 +18,40 @@ import (
 func init() {
 	portalFields := ent.Portal{}.Fields()
 	_ = portalFields
-	// portalDescCreatedAt is the schema descriptor for created_at field.
+	// portalDescCreatedAt is the schema descriptor for createdAt field.
 	portalDescCreatedAt := portalFields[1].Descriptor()
-	// portal.DefaultCreatedAt holds the default value on creation for the created_at field.
+	// portal.DefaultCreatedAt holds the default value on creation for the createdAt field.
 	portal.DefaultCreatedAt = portalDescCreatedAt.Default.(func() time.Time)
-	// portalDescUpdatedAt is the schema descriptor for updated_at field.
+	// portalDescUpdatedAt is the schema descriptor for updatedAt field.
 	portalDescUpdatedAt := portalFields[2].Descriptor()
-	// portal.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	// portal.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
 	portal.DefaultUpdatedAt = portalDescUpdatedAt.Default.(func() time.Time)
 	// portalDescIsActive is the schema descriptor for isActive field.
 	portalDescIsActive := portalFields[3].Descriptor()
 	// portal.DefaultIsActive holds the default value on creation for the isActive field.
 	portal.DefaultIsActive = portalDescIsActive.Default.(bool)
+	portalmetadataFields := ent.PortalMetadata{}.Fields()
+	_ = portalmetadataFields
+	// portalmetadataDescCreatedAt is the schema descriptor for createdAt field.
+	portalmetadataDescCreatedAt := portalmetadataFields[1].Descriptor()
+	// portalmetadata.DefaultCreatedAt holds the default value on creation for the createdAt field.
+	portalmetadata.DefaultCreatedAt = portalmetadataDescCreatedAt.Default.(func() time.Time)
+	// portalmetadataDescUpdatedAt is the schema descriptor for updatedAt field.
+	portalmetadataDescUpdatedAt := portalmetadataFields[2].Descriptor()
+	// portalmetadata.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	portalmetadata.DefaultUpdatedAt = portalmetadataDescUpdatedAt.Default.(func() time.Time)
 	userFields := ent.User{}.Fields()
 	_ = userFields
 	// userDescIsActive is the schema descriptor for isActive field.
 	userDescIsActive := userFields[1].Descriptor()
 	// user.DefaultIsActive holds the default value on creation for the isActive field.
 	user.DefaultIsActive = userDescIsActive.Default.(bool)
-	// userDescCreatedAt is the schema descriptor for created_at field.
+	// userDescCreatedAt is the schema descriptor for createdAt field.
 	userDescCreatedAt := userFields[2].Descriptor()
-	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
+	// user.DefaultCreatedAt holds the default value on creation for the createdAt field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
-	// userDescUpdatedAt is the schema descriptor for updated_at field.
+	// userDescUpdatedAt is the schema descriptor for updatedAt field.
 	userDescUpdatedAt := userFields[3].Descriptor()
-	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	// user.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
 }
