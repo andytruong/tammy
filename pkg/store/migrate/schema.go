@@ -52,6 +52,27 @@ var (
 			},
 		},
 	}
+	// PortalsColumns holds the columns for the "portals" table.
+	PortalsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "is_active", Type: field.TypeBool, Default: false},
+		{Name: "slug", Type: field.TypeString, Unique: true},
+	}
+	// PortalsTable holds the schema information for the "portals" table.
+	PortalsTable = &schema.Table{
+		Name:       "portals",
+		Columns:    PortalsColumns,
+		PrimaryKey: []*schema.Column{PortalsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "portal_slug",
+				Unique:  false,
+				Columns: []*schema.Column{PortalsColumns[4]},
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true},
@@ -110,13 +131,40 @@ var (
 			},
 		},
 	}
+	// PortalMembersColumns holds the columns for the "portal_members" table.
+	PortalMembersColumns = []*schema.Column{
+		{Name: "portal_id", Type: field.TypeUint32},
+		{Name: "account_id", Type: field.TypeUint32},
+	}
+	// PortalMembersTable holds the schema information for the "portal_members" table.
+	PortalMembersTable = &schema.Table{
+		Name:       "portal_members",
+		Columns:    PortalMembersColumns,
+		PrimaryKey: []*schema.Column{PortalMembersColumns[0], PortalMembersColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "portal_members_portal_id",
+				Columns:    []*schema.Column{PortalMembersColumns[0]},
+				RefColumns: []*schema.Column{PortalsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "portal_members_account_id",
+				Columns:    []*schema.Column{PortalMembersColumns[1]},
+				RefColumns: []*schema.Column{AccountsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AccountsTable,
 		AccountFieldsTable,
+		PortalsTable,
 		UsersTable,
 		UserEmailsTable,
 		UserPasswordsTable,
+		PortalMembersTable,
 	}
 )
 
@@ -125,4 +173,6 @@ func init() {
 	AccountFieldsTable.ForeignKeys[0].RefTable = AccountsTable
 	UserEmailsTable.ForeignKeys[0].RefTable = UsersTable
 	UserPasswordsTable.ForeignKeys[0].RefTable = UsersTable
+	PortalMembersTable.ForeignKeys[0].RefTable = PortalsTable
+	PortalMembersTable.ForeignKeys[1].RefTable = AccountsTable
 }

@@ -9,6 +9,7 @@ import (
 	"math"
 	"tammy/pkg/store/account"
 	"tammy/pkg/store/accountfield"
+	"tammy/pkg/store/portal"
 	"tammy/pkg/store/predicate"
 	"tammy/pkg/store/user"
 
@@ -28,6 +29,7 @@ type AccountQuery struct {
 	predicates []predicate.Account
 	// eager-loading edges.
 	withUser   *UserQuery
+	withPortal *PortalQuery
 	withFields *AccountFieldQuery
 	withFKs    bool
 	// intermediate query (i.e. traversal path).
@@ -81,6 +83,28 @@ func (aq *AccountQuery) QueryUser() *UserQuery {
 			sqlgraph.From(account.Table, account.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, account.UserTable, account.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPortal chains the current query on the "portal" edge.
+func (aq *AccountQuery) QueryPortal() *PortalQuery {
+	query := &PortalQuery{config: aq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(account.Table, account.FieldID, selector),
+			sqlgraph.To(portal.Table, portal.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, account.PortalTable, account.PortalPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -292,6 +316,7 @@ func (aq *AccountQuery) Clone() *AccountQuery {
 		order:      append([]OrderFunc{}, aq.order...),
 		predicates: append([]predicate.Account{}, aq.predicates...),
 		withUser:   aq.withUser.Clone(),
+		withPortal: aq.withPortal.Clone(),
 		withFields: aq.withFields.Clone(),
 		// clone intermediate query.
 		sql:    aq.sql.Clone(),
@@ -308,6 +333,17 @@ func (aq *AccountQuery) WithUser(opts ...func(*UserQuery)) *AccountQuery {
 		opt(query)
 	}
 	aq.withUser = query
+	return aq
+}
+
+// WithPortal tells the query-builder to eager-load the nodes that are connected to
+// the "portal" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AccountQuery) WithPortal(opts ...func(*PortalQuery)) *AccountQuery {
+	query := &PortalQuery{config: aq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withPortal = query
 	return aq
 }
 
@@ -393,8 +429,9 @@ func (aq *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Acco
 		nodes       = []*Account{}
 		withFKs     = aq.withFKs
 		_spec       = aq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			aq.withUser != nil,
+			aq.withPortal != nil,
 			aq.withFields != nil,
 		}
 	)
@@ -448,6 +485,59 @@ func (aq *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Acco
 			}
 			for i := range nodes {
 				nodes[i].Edges.User = n
+			}
+		}
+	}
+
+	if query := aq.withPortal; query != nil {
+		edgeids := make([]driver.Value, len(nodes))
+		byid := make(map[uint32]*Account)
+		nids := make(map[uint32]map[*Account]struct{})
+		for i, node := range nodes {
+			edgeids[i] = node.ID
+			byid[node.ID] = node
+			node.Edges.Portal = []*Portal{}
+		}
+		query.Where(func(s *sql.Selector) {
+			joinT := sql.Table(account.PortalTable)
+			s.Join(joinT).On(s.C(portal.FieldID), joinT.C(account.PortalPrimaryKey[0]))
+			s.Where(sql.InValues(joinT.C(account.PortalPrimaryKey[1]), edgeids...))
+			columns := s.SelectedColumns()
+			s.Select(joinT.C(account.PortalPrimaryKey[1]))
+			s.AppendSelect(columns...)
+			s.SetDistinct(false)
+		})
+		neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]interface{}, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]interface{}{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []interface{}) error {
+				outValue := uint32(values[0].(*sql.NullInt64).Int64)
+				inValue := uint32(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Account]struct{}{byid[outValue]: struct{}{}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byid[outValue]] = struct{}{}
+				return nil
+			}
+		})
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected "portal" node returned %v`, n.ID)
+			}
+			for kn := range nodes {
+				kn.Edges.Portal = append(kn.Edges.Portal, n)
 			}
 		}
 	}

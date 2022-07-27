@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"tammy/pkg/store/account"
 	"tammy/pkg/store/accountfield"
+	"tammy/pkg/store/portal"
 	"tammy/pkg/store/predicate"
 	"tammy/pkg/store/user"
 
@@ -65,6 +66,21 @@ func (au *AccountUpdate) SetUser(u *User) *AccountUpdate {
 	return au.SetUserID(u.ID)
 }
 
+// AddPortalIDs adds the "portal" edge to the Portal entity by IDs.
+func (au *AccountUpdate) AddPortalIDs(ids ...uint32) *AccountUpdate {
+	au.mutation.AddPortalIDs(ids...)
+	return au
+}
+
+// AddPortal adds the "portal" edges to the Portal entity.
+func (au *AccountUpdate) AddPortal(p ...*Portal) *AccountUpdate {
+	ids := make([]uint32, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return au.AddPortalIDs(ids...)
+}
+
 // AddFieldIDs adds the "fields" edge to the AccountField entity by IDs.
 func (au *AccountUpdate) AddFieldIDs(ids ...uint32) *AccountUpdate {
 	au.mutation.AddFieldIDs(ids...)
@@ -89,6 +105,27 @@ func (au *AccountUpdate) Mutation() *AccountMutation {
 func (au *AccountUpdate) ClearUser() *AccountUpdate {
 	au.mutation.ClearUser()
 	return au
+}
+
+// ClearPortal clears all "portal" edges to the Portal entity.
+func (au *AccountUpdate) ClearPortal() *AccountUpdate {
+	au.mutation.ClearPortal()
+	return au
+}
+
+// RemovePortalIDs removes the "portal" edge to Portal entities by IDs.
+func (au *AccountUpdate) RemovePortalIDs(ids ...uint32) *AccountUpdate {
+	au.mutation.RemovePortalIDs(ids...)
+	return au
+}
+
+// RemovePortal removes "portal" edges to Portal entities.
+func (au *AccountUpdate) RemovePortal(p ...*Portal) *AccountUpdate {
+	ids := make([]uint32, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return au.RemovePortalIDs(ids...)
 }
 
 // ClearFields clears all "fields" edges to the AccountField entity.
@@ -261,6 +298,60 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if au.mutation.PortalCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   account.PortalTable,
+			Columns: account.PortalPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portal.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedPortalIDs(); len(nodes) > 0 && !au.mutation.PortalCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   account.PortalTable,
+			Columns: account.PortalPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.PortalIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   account.PortalTable,
+			Columns: account.PortalPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if au.mutation.FieldsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -370,6 +461,21 @@ func (auo *AccountUpdateOne) SetUser(u *User) *AccountUpdateOne {
 	return auo.SetUserID(u.ID)
 }
 
+// AddPortalIDs adds the "portal" edge to the Portal entity by IDs.
+func (auo *AccountUpdateOne) AddPortalIDs(ids ...uint32) *AccountUpdateOne {
+	auo.mutation.AddPortalIDs(ids...)
+	return auo
+}
+
+// AddPortal adds the "portal" edges to the Portal entity.
+func (auo *AccountUpdateOne) AddPortal(p ...*Portal) *AccountUpdateOne {
+	ids := make([]uint32, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return auo.AddPortalIDs(ids...)
+}
+
 // AddFieldIDs adds the "fields" edge to the AccountField entity by IDs.
 func (auo *AccountUpdateOne) AddFieldIDs(ids ...uint32) *AccountUpdateOne {
 	auo.mutation.AddFieldIDs(ids...)
@@ -394,6 +500,27 @@ func (auo *AccountUpdateOne) Mutation() *AccountMutation {
 func (auo *AccountUpdateOne) ClearUser() *AccountUpdateOne {
 	auo.mutation.ClearUser()
 	return auo
+}
+
+// ClearPortal clears all "portal" edges to the Portal entity.
+func (auo *AccountUpdateOne) ClearPortal() *AccountUpdateOne {
+	auo.mutation.ClearPortal()
+	return auo
+}
+
+// RemovePortalIDs removes the "portal" edge to Portal entities by IDs.
+func (auo *AccountUpdateOne) RemovePortalIDs(ids ...uint32) *AccountUpdateOne {
+	auo.mutation.RemovePortalIDs(ids...)
+	return auo
+}
+
+// RemovePortal removes "portal" edges to Portal entities.
+func (auo *AccountUpdateOne) RemovePortal(p ...*Portal) *AccountUpdateOne {
+	ids := make([]uint32, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return auo.RemovePortalIDs(ids...)
 }
 
 // ClearFields clears all "fields" edges to the AccountField entity.
@@ -588,6 +715,60 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint32,
 					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.PortalCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   account.PortalTable,
+			Columns: account.PortalPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portal.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedPortalIDs(); len(nodes) > 0 && !auo.mutation.PortalCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   account.PortalTable,
+			Columns: account.PortalPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.PortalIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   account.PortalTable,
+			Columns: account.PortalPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portal.FieldID,
 				},
 			},
 		}

@@ -32,11 +32,13 @@ type Account struct {
 type AccountEdges struct {
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
+	// Portal holds the value of the portal edge.
+	Portal []*Portal `json:"portal,omitempty"`
 	// Fields holds the value of the fields edge.
 	Fields []*AccountField `json:"fields,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -53,10 +55,19 @@ func (e AccountEdges) UserOrErr() (*User, error) {
 	return nil, &NotLoadedError{edge: "user"}
 }
 
+// PortalOrErr returns the Portal value or an error if the edge
+// was not loaded in eager-loading.
+func (e AccountEdges) PortalOrErr() ([]*Portal, error) {
+	if e.loadedTypes[1] {
+		return e.Portal, nil
+	}
+	return nil, &NotLoadedError{edge: "portal"}
+}
+
 // FieldsOrErr returns the Fields value or an error if the edge
 // was not loaded in eager-loading.
 func (e AccountEdges) FieldsOrErr() ([]*AccountField, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Fields, nil
 	}
 	return nil, &NotLoadedError{edge: "fields"}
@@ -127,6 +138,11 @@ func (a *Account) assignValues(columns []string, values []interface{}) error {
 // QueryUser queries the "user" edge of the Account entity.
 func (a *Account) QueryUser() *UserQuery {
 	return (&AccountClient{config: a.config}).QueryUser(a)
+}
+
+// QueryPortal queries the "portal" edge of the Account entity.
+func (a *Account) QueryPortal() *PortalQuery {
+	return (&AccountClient{config: a.config}).QueryPortal(a)
 }
 
 // QueryFields queries the "fields" edge of the Account entity.

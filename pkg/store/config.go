@@ -26,6 +26,7 @@ type config struct {
 type hooks struct {
 	Account      []ent.Hook
 	AccountField []ent.Hook
+	Portal       []ent.Hook
 	User         []ent.Hook
 	UserEmail    []ent.Hook
 	UserPassword []ent.Hook

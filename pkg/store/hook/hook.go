@@ -34,6 +34,19 @@ func (f AccountFieldFunc) Mutate(ctx context.Context, m store.Mutation) (store.V
 	return f(ctx, mv)
 }
 
+// The PortalFunc type is an adapter to allow the use of ordinary
+// function as Portal mutator.
+type PortalFunc func(context.Context, *store.PortalMutation) (store.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PortalFunc) Mutate(ctx context.Context, m store.Mutation) (store.Value, error) {
+	mv, ok := m.(*store.PortalMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *store.PortalMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *store.UserMutation) (store.Value, error)

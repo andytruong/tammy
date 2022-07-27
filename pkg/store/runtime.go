@@ -4,6 +4,7 @@ package store
 
 import (
 	"tammy/ent"
+	"tammy/pkg/store/portal"
 	"tammy/pkg/store/user"
 	"time"
 
@@ -14,6 +15,20 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	portalFields := ent.Portal{}.Fields()
+	_ = portalFields
+	// portalDescCreatedAt is the schema descriptor for created_at field.
+	portalDescCreatedAt := portalFields[1].Descriptor()
+	// portal.DefaultCreatedAt holds the default value on creation for the created_at field.
+	portal.DefaultCreatedAt = portalDescCreatedAt.Default.(func() time.Time)
+	// portalDescUpdatedAt is the schema descriptor for updated_at field.
+	portalDescUpdatedAt := portalFields[2].Descriptor()
+	// portal.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	portal.DefaultUpdatedAt = portalDescUpdatedAt.Default.(func() time.Time)
+	// portalDescIsActive is the schema descriptor for isActive field.
+	portalDescIsActive := portalFields[3].Descriptor()
+	// portal.DefaultIsActive holds the default value on creation for the isActive field.
+	portal.DefaultIsActive = portalDescIsActive.Default.(bool)
 	userFields := ent.User{}.Fields()
 	_ = userFields
 	// userDescIsActive is the schema descriptor for isActive field.

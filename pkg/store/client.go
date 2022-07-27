@@ -11,6 +11,7 @@ import (
 
 	"tammy/pkg/store/account"
 	"tammy/pkg/store/accountfield"
+	"tammy/pkg/store/portal"
 	"tammy/pkg/store/user"
 	"tammy/pkg/store/useremail"
 	"tammy/pkg/store/userpassword"
@@ -29,6 +30,8 @@ type Client struct {
 	Account *AccountClient
 	// AccountField is the client for interacting with the AccountField builders.
 	AccountField *AccountFieldClient
+	// Portal is the client for interacting with the Portal builders.
+	Portal *PortalClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserEmail is the client for interacting with the UserEmail builders.
@@ -50,6 +53,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Account = NewAccountClient(c.config)
 	c.AccountField = NewAccountFieldClient(c.config)
+	c.Portal = NewPortalClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.UserEmail = NewUserEmailClient(c.config)
 	c.UserPassword = NewUserPasswordClient(c.config)
@@ -88,6 +92,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		config:       cfg,
 		Account:      NewAccountClient(cfg),
 		AccountField: NewAccountFieldClient(cfg),
+		Portal:       NewPortalClient(cfg),
 		User:         NewUserClient(cfg),
 		UserEmail:    NewUserEmailClient(cfg),
 		UserPassword: NewUserPasswordClient(cfg),
@@ -112,6 +117,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		config:       cfg,
 		Account:      NewAccountClient(cfg),
 		AccountField: NewAccountFieldClient(cfg),
+		Portal:       NewPortalClient(cfg),
 		User:         NewUserClient(cfg),
 		UserEmail:    NewUserEmailClient(cfg),
 		UserPassword: NewUserPasswordClient(cfg),
@@ -146,6 +152,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.Account.Use(hooks...)
 	c.AccountField.Use(hooks...)
+	c.Portal.Use(hooks...)
 	c.User.Use(hooks...)
 	c.UserEmail.Use(hooks...)
 	c.UserPassword.Use(hooks...)
@@ -245,6 +252,22 @@ func (c *AccountClient) QueryUser(a *Account) *UserQuery {
 			sqlgraph.From(account.Table, account.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, account.UserTable, account.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPortal queries the portal edge of a Account.
+func (c *AccountClient) QueryPortal(a *Account) *PortalQuery {
+	query := &PortalQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(account.Table, account.FieldID, id),
+			sqlgraph.To(portal.Table, portal.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, account.PortalTable, account.PortalPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -377,6 +400,112 @@ func (c *AccountFieldClient) QueryAccount(af *AccountField) *AccountQuery {
 // Hooks returns the client hooks.
 func (c *AccountFieldClient) Hooks() []Hook {
 	return c.hooks.AccountField
+}
+
+// PortalClient is a client for the Portal schema.
+type PortalClient struct {
+	config
+}
+
+// NewPortalClient returns a client for the Portal from the given config.
+func NewPortalClient(c config) *PortalClient {
+	return &PortalClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `portal.Hooks(f(g(h())))`.
+func (c *PortalClient) Use(hooks ...Hook) {
+	c.hooks.Portal = append(c.hooks.Portal, hooks...)
+}
+
+// Create returns a builder for creating a Portal entity.
+func (c *PortalClient) Create() *PortalCreate {
+	mutation := newPortalMutation(c.config, OpCreate)
+	return &PortalCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Portal entities.
+func (c *PortalClient) CreateBulk(builders ...*PortalCreate) *PortalCreateBulk {
+	return &PortalCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Portal.
+func (c *PortalClient) Update() *PortalUpdate {
+	mutation := newPortalMutation(c.config, OpUpdate)
+	return &PortalUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PortalClient) UpdateOne(po *Portal) *PortalUpdateOne {
+	mutation := newPortalMutation(c.config, OpUpdateOne, withPortal(po))
+	return &PortalUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PortalClient) UpdateOneID(id uint32) *PortalUpdateOne {
+	mutation := newPortalMutation(c.config, OpUpdateOne, withPortalID(id))
+	return &PortalUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Portal.
+func (c *PortalClient) Delete() *PortalDelete {
+	mutation := newPortalMutation(c.config, OpDelete)
+	return &PortalDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PortalClient) DeleteOne(po *Portal) *PortalDeleteOne {
+	return c.DeleteOneID(po.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *PortalClient) DeleteOneID(id uint32) *PortalDeleteOne {
+	builder := c.Delete().Where(portal.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PortalDeleteOne{builder}
+}
+
+// Query returns a query builder for Portal.
+func (c *PortalClient) Query() *PortalQuery {
+	return &PortalQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Portal entity by its id.
+func (c *PortalClient) Get(ctx context.Context, id uint32) (*Portal, error) {
+	return c.Query().Where(portal.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PortalClient) GetX(ctx context.Context, id uint32) *Portal {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryMembers queries the members edge of a Portal.
+func (c *PortalClient) QueryMembers(po *Portal) *AccountQuery {
+	query := &AccountQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := po.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(portal.Table, portal.FieldID, id),
+			sqlgraph.To(account.Table, account.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, portal.MembersTable, portal.MembersPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(po.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PortalClient) Hooks() []Hook {
+	return c.hooks.Portal
 }
 
 // UserClient is a client for the User schema.

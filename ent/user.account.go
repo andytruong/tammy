@@ -28,8 +28,12 @@ func (Account) Edges() []ent.Edge {
 			Required().
 			Unique().
 			Annotations(entproto.Field(400)),
-		edge.To("fields", AccountField.Type).
+		edge.
+			From("portal", Portal.Type).
+			Ref("members").
 			Annotations(entproto.Field(401)),
+		edge.To("fields", AccountField.Type).
+			Annotations(entproto.Field(402)),
 	}
 }
 

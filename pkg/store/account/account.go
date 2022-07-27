@@ -15,6 +15,8 @@ const (
 	FieldIsBlocked = "is_blocked"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
+	// EdgePortal holds the string denoting the portal edge name in mutations.
+	EdgePortal = "portal"
 	// EdgeFields holds the string denoting the fields edge name in mutations.
 	EdgeFields = "fields"
 	// Table holds the table name of the account in the database.
@@ -26,6 +28,11 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_accounts"
+	// PortalTable is the table that holds the portal relation/edge. The primary key declared below.
+	PortalTable = "portal_members"
+	// PortalInverseTable is the table name for the Portal entity.
+	// It exists in this package in order to avoid circular dependency with the "portal" package.
+	PortalInverseTable = "portals"
 	// FieldsTable is the table that holds the fields relation/edge.
 	FieldsTable = "account_fields"
 	// FieldsInverseTable is the table name for the AccountField entity.
@@ -48,6 +55,12 @@ var Columns = []string{
 var ForeignKeys = []string{
 	"user_accounts",
 }
+
+var (
+	// PortalPrimaryKey and PortalColumn2 are the table columns denoting the
+	// primary key for the portal relation (M2M).
+	PortalPrimaryKey = []string{"portal_id", "account_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {

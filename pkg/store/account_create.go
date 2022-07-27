@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"tammy/pkg/store/account"
 	"tammy/pkg/store/accountfield"
+	"tammy/pkg/store/portal"
 	"tammy/pkg/store/user"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -54,6 +55,21 @@ func (ac *AccountCreate) SetUserID(id uint32) *AccountCreate {
 // SetUser sets the "user" edge to the User entity.
 func (ac *AccountCreate) SetUser(u *User) *AccountCreate {
 	return ac.SetUserID(u.ID)
+}
+
+// AddPortalIDs adds the "portal" edge to the Portal entity by IDs.
+func (ac *AccountCreate) AddPortalIDs(ids ...uint32) *AccountCreate {
+	ac.mutation.AddPortalIDs(ids...)
+	return ac
+}
+
+// AddPortal adds the "portal" edges to the Portal entity.
+func (ac *AccountCreate) AddPortal(p ...*Portal) *AccountCreate {
+	ids := make([]uint32, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ac.AddPortalIDs(ids...)
 }
 
 // AddFieldIDs adds the "fields" edge to the AccountField entity by IDs.
@@ -234,6 +250,25 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.user_accounts = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.PortalIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   account.PortalTable,
+			Columns: account.PortalPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint32,
+					Column: portal.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ac.mutation.FieldsIDs(); len(nodes) > 0 {

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"tammy/pkg/store/account"
 	"tammy/pkg/store/accountfield"
+	"tammy/pkg/store/portal"
 	"tammy/pkg/store/user"
 	"tammy/pkg/store/useremail"
 	"tammy/pkg/store/userpassword"
@@ -37,6 +38,7 @@ func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
 		account.Table:      account.ValidColumn,
 		accountfield.Table: accountfield.ValidColumn,
+		portal.Table:       portal.ValidColumn,
 		user.Table:         user.ValidColumn,
 		useremail.Table:    useremail.ValidColumn,
 		userpassword.Table: userpassword.ValidColumn,
