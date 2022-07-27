@@ -2,7 +2,7 @@ package ent
 
 import (
 	"time"
-	
+
 	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
@@ -85,7 +85,18 @@ func (PortalMetadata) Fields() []ent.Field {
 			),
 		field.
 			Enum("lifecycle").
-			Values("LIFECYCLE_TRIAL", "LIFECYCLE_ONBOARD", "LIFECYCLE_LIVE", "LIFECYCLE_EXPIRED_TRIAL", "LIFECYCLE_SUSPENDED", "LIFECYCLE_CANCELLED", "LIFECYCLE_TEST", "LIFECYCLE_SAMPLE", "LIFECYCLE_TEMPLATE").
+			Default("LIFECYCLE_TRIAL").
+			Values(
+				"LIFECYCLE_TRIAL",
+				"LIFECYCLE_ONBOARD",
+				"LIFECYCLE_LIVE",
+				"LIFECYCLE_EXPIRED_TRIAL",
+				"LIFECYCLE_SUSPENDED",
+				"LIFECYCLE_CANCELLED",
+				"LIFECYCLE_TEST",
+				"LIFECYCLE_SAMPLE",
+				"LIFECYCLE_TEMPLATE",
+			).
 			Annotations(
 				entproto.Field(5),
 				entproto.Enum(map[string]int32{

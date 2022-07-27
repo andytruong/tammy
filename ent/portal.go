@@ -2,7 +2,7 @@ package ent
 
 import (
 	"time"
-	
+
 	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
 	"entgo.io/ent/schema"

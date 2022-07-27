@@ -48,6 +48,14 @@ func (pmu *PortalMetadataUpdate) SetLifecycle(po portalmetadata.Lifecycle) *Port
 	return pmu
 }
 
+// SetNillableLifecycle sets the "lifecycle" field if the given value is not nil.
+func (pmu *PortalMetadataUpdate) SetNillableLifecycle(po *portalmetadata.Lifecycle) *PortalMetadataUpdate {
+	if po != nil {
+		pmu.SetLifecycle(*po)
+	}
+	return pmu
+}
+
 // SetPortalID sets the "portal" edge to the Portal entity by ID.
 func (pmu *PortalMetadataUpdate) SetPortalID(id uint32) *PortalMetadataUpdate {
 	pmu.mutation.SetPortalID(id)
@@ -251,6 +259,14 @@ func (pmuo *PortalMetadataUpdateOne) SetNillableKind(po *portalmetadata.Kind) *P
 // SetLifecycle sets the "lifecycle" field.
 func (pmuo *PortalMetadataUpdateOne) SetLifecycle(po portalmetadata.Lifecycle) *PortalMetadataUpdateOne {
 	pmuo.mutation.SetLifecycle(po)
+	return pmuo
+}
+
+// SetNillableLifecycle sets the "lifecycle" field if the given value is not nil.
+func (pmuo *PortalMetadataUpdateOne) SetNillableLifecycle(po *portalmetadata.Lifecycle) *PortalMetadataUpdateOne {
+	if po != nil {
+		pmuo.SetLifecycle(*po)
+	}
 	return pmuo
 }
 

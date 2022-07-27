@@ -104,6 +104,9 @@ func KindValidator(k Kind) error {
 // Lifecycle defines the type for the "lifecycle" enum field.
 type Lifecycle string
 
+// LifecycleLIFECYCLE_TRIAL is the default value of the Lifecycle enum.
+const DefaultLifecycle = LifecycleLIFECYCLE_TRIAL
+
 // Lifecycle values.
 const (
 	LifecycleLIFECYCLE_TRIAL         Lifecycle = "LIFECYCLE_TRIAL"

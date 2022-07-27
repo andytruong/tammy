@@ -69,6 +69,14 @@ func (pmc *PortalMetadataCreate) SetLifecycle(po portalmetadata.Lifecycle) *Port
 	return pmc
 }
 
+// SetNillableLifecycle sets the "lifecycle" field if the given value is not nil.
+func (pmc *PortalMetadataCreate) SetNillableLifecycle(po *portalmetadata.Lifecycle) *PortalMetadataCreate {
+	if po != nil {
+		pmc.SetLifecycle(*po)
+	}
+	return pmc
+}
+
 // SetID sets the "id" field.
 func (pmc *PortalMetadataCreate) SetID(u uint32) *PortalMetadataCreate {
 	pmc.mutation.SetID(u)
@@ -174,6 +182,10 @@ func (pmc *PortalMetadataCreate) defaults() {
 	if _, ok := pmc.mutation.Kind(); !ok {
 		v := portalmetadata.DefaultKind
 		pmc.mutation.SetKind(v)
+	}
+	if _, ok := pmc.mutation.Lifecycle(); !ok {
+		v := portalmetadata.DefaultLifecycle
+		pmc.mutation.SetLifecycle(v)
 	}
 }
 
