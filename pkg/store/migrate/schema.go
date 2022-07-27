@@ -103,7 +103,7 @@ var (
 		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "kind", Type: field.TypeEnum, Enums: []string{"KIND_DEVELOPMENT", "KIND_INTERNAL", "KIND_CONTENT_PARTNER", "KIND_DISTRIBUTION_PARTNER", "KIND_CUSTOMER", "KIND_COMPLISPACE", "KIND_TEAM"}, Default: "KIND_DEVELOPMENT"},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"KIND_DEVELOPMENT", "KIND_INTERNAL", "KIND_CONTENT_PARTNER", "KIND_DISTRIBUTION_PARTNER", "KIND_CUSTOMER", "KIND_TEAM", "KIND_BIG_PARTNER"}, Default: "KIND_DEVELOPMENT"},
 		{Name: "lifecycle", Type: field.TypeEnum, Enums: []string{"LIFECYCLE_TRIAL", "LIFECYCLE_ONBOARD", "LIFECYCLE_LIVE", "LIFECYCLE_EXPIRED_TRIAL", "LIFECYCLE_SUSPENDED", "LIFECYCLE_CANCELLED", "LIFECYCLE_TEST", "LIFECYCLE_SAMPLE", "LIFECYCLE_TEMPLATE"}, Default: "LIFECYCLE_TRIAL"},
 		{Name: "portal_metadata", Type: field.TypeUint32},
 	}

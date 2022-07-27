@@ -95,9 +95,9 @@ message PortalMetadata {
 
     KIND_CUSTOMER = 4;
 
-    KIND_COMPLISPACE = 5;
+    KIND_TEAM = 5;
 
-    KIND_TEAM = 6;
+    KIND_BIG_PARTNER = 6;
   }
 
   enum Lifecycle {

@@ -2,7 +2,7 @@ package ent
 
 import (
 	"time"
-
+	
 	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
@@ -69,7 +69,15 @@ func (PortalMetadata) Fields() []ent.Field {
 			Annotations(entproto.Field(3)),
 		field.
 			Enum("kind").
-			Values("KIND_DEVELOPMENT", "KIND_INTERNAL", "KIND_CONTENT_PARTNER", "KIND_DISTRIBUTION_PARTNER", "KIND_CUSTOMER", "KIND_COMPLISPACE", "KIND_TEAM").
+			Values(
+				"KIND_DEVELOPMENT",
+				"KIND_INTERNAL",
+				"KIND_CONTENT_PARTNER",
+				"KIND_DISTRIBUTION_PARTNER",
+				"KIND_CUSTOMER",
+				"KIND_TEAM",
+				"KIND_BIG_PARTNER",
+			).
 			Default("KIND_DEVELOPMENT").
 			Annotations(
 				entproto.Field(4),
@@ -79,8 +87,8 @@ func (PortalMetadata) Fields() []ent.Field {
 					"KIND_CONTENT_PARTNER":      2,
 					"KIND_DISTRIBUTION_PARTNER": 3,
 					"KIND_CUSTOMER":             4,
-					"KIND_COMPLISPACE":          5,
-					"KIND_TEAM":                 6,
+					"KIND_TEAM":                 5,
+					"KIND_BIG_PARTNER":          6,
 				}),
 			),
 		field.

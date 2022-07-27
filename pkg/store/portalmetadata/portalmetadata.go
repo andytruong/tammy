@@ -83,8 +83,8 @@ const (
 	KindKIND_CONTENT_PARTNER      Kind = "KIND_CONTENT_PARTNER"
 	KindKIND_DISTRIBUTION_PARTNER Kind = "KIND_DISTRIBUTION_PARTNER"
 	KindKIND_CUSTOMER             Kind = "KIND_CUSTOMER"
-	KindKIND_COMPLISPACE          Kind = "KIND_COMPLISPACE"
 	KindKIND_TEAM                 Kind = "KIND_TEAM"
+	KindKIND_BIG_PARTNER          Kind = "KIND_BIG_PARTNER"
 )
 
 func (k Kind) String() string {
@@ -94,7 +94,7 @@ func (k Kind) String() string {
 // KindValidator is a validator for the "kind" field enum values. It is called by the builders before save.
 func KindValidator(k Kind) error {
 	switch k {
-	case KindKIND_DEVELOPMENT, KindKIND_INTERNAL, KindKIND_CONTENT_PARTNER, KindKIND_DISTRIBUTION_PARTNER, KindKIND_CUSTOMER, KindKIND_COMPLISPACE, KindKIND_TEAM:
+	case KindKIND_DEVELOPMENT, KindKIND_INTERNAL, KindKIND_CONTENT_PARTNER, KindKIND_DISTRIBUTION_PARTNER, KindKIND_CUSTOMER, KindKIND_TEAM, KindKIND_BIG_PARTNER:
 		return nil
 	default:
 		return fmt.Errorf("portalmetadata: invalid enum value for kind field: %q", k)
