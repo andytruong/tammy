@@ -5,8 +5,8 @@ go 1.18
 require (
 	entgo.io/contrib v0.3.0
 	entgo.io/ent v0.11.1
-	github.com/mattn/go-sqlite3 v1.14.13
 	google.golang.org/grpc v1.47.0
+	google.golang.org/protobuf v1.28.0
 )
 
 require (
@@ -30,5 +30,4 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.12 // indirect
 	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
-	google.golang.org/protobuf v1.28.0 // indirect
 )
