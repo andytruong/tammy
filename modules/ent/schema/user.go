@@ -1,8 +1,8 @@
-package ent
+package schema
 
 import (
 	"time"
-	
+
 	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
@@ -17,7 +17,7 @@ type User struct {
 func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.
-			Uint32("id").
+			Int("id").
 			Annotations(entproto.Field(1)).
 			Immutable(),
 		field.Bool("isActive").
@@ -53,6 +53,9 @@ func (User) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(
 			entproto.PackageName(GO_PACKAGE),
+		),
+		entproto.Service(
+			entproto.Methods(entproto.MethodAll),
 		),
 	}
 }

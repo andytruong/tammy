@@ -1,4 +1,4 @@
-package ent
+package schema
 
 import (
 	"entgo.io/contrib/entproto"
@@ -15,7 +15,7 @@ type UserEmail struct {
 func (UserEmail) Fields() []ent.Field {
 	return []ent.Field{
 		field.
-			Uint32("id").
+			Int("id").
 			Annotations(entproto.Field(1)),
 		field.
 			String("value").
@@ -45,6 +45,9 @@ func (UserEmail) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(
 			entproto.PackageName(GO_PACKAGE),
+		),
+		entproto.Service(
+			entproto.Methods(entproto.MethodAll),
 		),
 	}
 }

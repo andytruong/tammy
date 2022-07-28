@@ -1,8 +1,8 @@
-package ent
+package schema
 
 import (
 	"time"
-	
+
 	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
@@ -16,7 +16,7 @@ type PortalLegal struct {
 
 func (PortalLegal) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("id").Annotations(entproto.Field(1)),
+		field.Int("id").Annotations(entproto.Field(1)),
 		field.
 			Time("createdAt").
 			Annotations(entproto.Field(2)).
@@ -45,6 +45,7 @@ func (PortalLegal) Annotations() []schema.Annotation {
 		entproto.Message(
 			entproto.PackageName(GO_PACKAGE),
 		),
+		entproto.Service(entproto.Methods(entproto.MethodAll)),
 	}
 }
 
@@ -55,7 +56,7 @@ type PortalMetadata struct {
 func (PortalMetadata) Fields() []ent.Field {
 	return []ent.Field{
 		field.
-			Uint32("id").
+			Int("id").
 			Annotations(entproto.Field(1)),
 		field.
 			Time("createdAt").
@@ -137,6 +138,9 @@ func (PortalMetadata) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(
 			entproto.PackageName(GO_PACKAGE),
+		),
+		entproto.Service(
+			entproto.Methods(entproto.MethodAll),
 		),
 	}
 }

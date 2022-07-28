@@ -1,4 +1,4 @@
-package ent
+package schema
 
 import (
 	"entgo.io/contrib/entproto"
@@ -14,8 +14,7 @@ type UserPassword struct {
 
 func (UserPassword) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("id").Annotations(entproto.Field(1)),
-		field.Uint32("userId").Annotations(entproto.Field(2)),
+		field.Int("id").Annotations(entproto.Field(1)),
 		field.String("hashedValue").Annotations(entproto.Field(3)),
 		field.Bool("isActive").Annotations(entproto.Field(4)),
 		field.Uint32("createdAt").Annotations(entproto.Field(5)),
@@ -36,6 +35,9 @@ func (UserPassword) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(
 			entproto.PackageName(GO_PACKAGE),
+		),
+		entproto.Service(
+			entproto.Methods(entproto.MethodAll),
 		),
 	}
 }

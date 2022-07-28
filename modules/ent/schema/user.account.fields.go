@@ -1,4 +1,4 @@
-package ent
+package schema
 
 import (
 	"entgo.io/contrib/entproto"
@@ -14,8 +14,8 @@ type AccountField struct {
 
 func (AccountField) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("id").Annotations(entproto.Field(1)),
-		field.Uint32("fid").Annotations(entproto.Field(2)).Comment("field ID"),
+		field.Int("id").Annotations(entproto.Field(1)),
+		field.Int("fid").Annotations(entproto.Field(2)).Comment("field ID"),
 		field.String("key").Annotations(entproto.Field(3)).Comment("field name"),
 		field.String("value").Annotations(entproto.Field(4)).Comment("field value"),
 	}
@@ -35,5 +35,8 @@ func (AccountField) Edges() []ent.Edge {
 func (AccountField) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(entproto.PackageName(GO_PACKAGE)),
+		entproto.Service(
+			entproto.Methods(entproto.MethodAll),
+		),
 	}
 }

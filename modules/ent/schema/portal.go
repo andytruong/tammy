@@ -1,8 +1,8 @@
-package ent
+package schema
 
 import (
 	"time"
-	
+
 	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
@@ -24,7 +24,7 @@ func (Portal) Indexes() []ent.Index {
 func (Portal) Fields() []ent.Field {
 	return []ent.Field{
 		field.
-			Uint32("id").
+			Int("id").
 			Immutable().
 			Annotations(entproto.Field(1)),
 		field.
@@ -65,6 +65,9 @@ func (Portal) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(
 			entproto.PackageName(GO_PACKAGE),
+		),
+		entproto.Service(
+			entproto.Methods(entproto.MethodAll),
 		),
 	}
 }

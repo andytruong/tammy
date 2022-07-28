@@ -1,4 +1,4 @@
-package ent
+package schema
 
 import (
 	"entgo.io/contrib/entproto"
@@ -14,8 +14,7 @@ type Account struct {
 
 func (Account) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint32("id").Annotations(entproto.Field(1)),
-		field.Uint32("userId").Annotations(entproto.Field(2)),
+		field.Int("id").Annotations(entproto.Field(1)),
 		field.Bool("isActive").Annotations(entproto.Field(3)),
 		field.Bool("isBlocked").Annotations(entproto.Field(4)),
 	}
@@ -41,6 +40,9 @@ func (Account) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(
 			entproto.PackageName(GO_PACKAGE),
+		),
+		entproto.Service(
+			entproto.Methods(entproto.MethodAll),
 		),
 	}
 }

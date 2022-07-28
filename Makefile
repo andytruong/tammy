@@ -9,6 +9,14 @@ mod.vendor: install.gen-grpc
 	go mod tidy
 	go mod vendor
 
+api.gen:
+	protoc --proto_path=./pkg/proto/ \
+		--go_out=./pkg/proto/pb \
+		--go_opt=paths=source_relative \
+		--go-grpc_out=pkg/proto/pb \
+		--go-grpc_opt=paths=source_relative \
+		./pkg/proto/rpc.proto
+
 # ---------------------
 # Services › Store
 # ---------------------
