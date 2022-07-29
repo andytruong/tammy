@@ -4,14 +4,21 @@ TAMMY
 ```mermaid
 graph LR
 
+vault["🔐 VAULT"]
+ui["🌎 UI"]
+app["✨ APP"] 
+store["🏪 STORE"] 
+db["📁 DATABASE"]
+
 subgraph Architecture
   user["🧑‍🎓 USER"] 
-    --> ui["🌎 UI"] 
-    --> app["✨ APP"] 
-    -- grpc --> store["🏪 STORE"] 
-    --> database["📁 DATABASE"]
+    --> ui
+    --> app
+    -- "grpc" --> store
+    --> db
 
-	vault["🔐 VAULT"] -. "credentials" .-> app
+	vault -. "credentials" .-> app
+  vault -. "credentials" .-> store
 end
 ```
 
