@@ -14,14 +14,18 @@ etcd["🔊 ETCD"]
 subgraph Architecture
   user["🧑‍🎓 USER"] 
     --> ui
-    --> app
-    -- "grpc" --> store
-    --> db
+    -- "HTTP/Restful/Websocket" --> app
 
-	vault -. "credentials" .-> app
-  vault -. "credentials" .-> store
-  etcd -. "changes" .-> app
-  etcd -. "changes" .-> store
+  subgraph Backend
+      app
+          -- "grpc" --> store
+          --> db
+
+      vault -. "credentials" .-> app
+      vault -. "credentials" .-> store
+      etcd -. "changes" .-> app
+      etcd -. "changes" .-> store
+  end
 end
 ```
 
