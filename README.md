@@ -22,6 +22,8 @@ subgraph Architecture
 end
 ```
 
-- `🔐 VAULT`: We can manage who can access store.
+- `🔐 VAULT` allow us to manage WHEN a certain WHO access WHAT:
+	- Who can access store.
+	- Who can access database.
 - `🏪 STORE` provides grpc interface, same ORM for all languages
 - Scale up `✨ APP` -> Don't add direct pressure to database.
