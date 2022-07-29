@@ -23,16 +23,17 @@ subgraph Architecture
 
       vault -. "credentials" .-> app
       vault -. "credentials" .-> store
-      etcd -. "changes" .-> app
+      etcd -..-> app
       etcd -. "changes" .-> store
   end
 end
 ```
 
-- `🔐 VAULT` allow us to manage WHEN a certain WHO access WHAT:
-	- Who can access store.
-	- Who can access database.
-- `🏪 STORE` provides grpc interface, same ORM for all languages
-	- Scale up `✨ APP` -> Don't add direct pressure to database.
-- `🔊 ETCD` notify new nodes come in/out.
-	- System can run faster without extra layer (proxy/load balancer).
+1. `🔐 VAULT` allow us to manage WHEN a certain WHO access WHAT:
+	1. Who can access store.
+	2. Who can access database.
+1. `🏪 STORE` provides grpc interface, same ORM for all languages
+	1. Scale up `✨ APP` -> Don't add direct pressure to database.
+1. `🔊 ETCD` notify new nodes come in/out.
+	1. System can run faster without extra layer (proxy/load balancer).
+	2. Provide centralised configuration for applications.
