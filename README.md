@@ -5,9 +5,13 @@ TAMMY
 graph LR
 
 subgraph Architecture
-	vault["🔐 VAULT"] -. "credentials" .-> app["✨ APP"]
-	app -- grpc --> store["🏪 STORE"]
-	store --> database["📁 DATABSE"]
+  user["🧑‍🎓 USER"] 
+    --> ui["🌎 UI"] 
+    --> app["✨ APP"] 
+    -- grpc --> store["🏪 STORE"] 
+    --> database["📁 DATABASE"]
+
+	vault["🔐 VAULT"] -. "credentials" .-> app
 end
 ```
 
